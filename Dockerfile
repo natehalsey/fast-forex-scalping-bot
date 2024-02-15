@@ -10,12 +10,15 @@ RUN python -m pip install --upgrade pip
 
 COPY .env ./
 COPY src ./
-COPY wheels/ ./
+COPY wheels/ ./wheels
 COPY requirements.txt ./
+COPY setup.py ./
 
 RUN pip install pip-tools
 RUN pip-sync requirements.txt
 
 RUN touch proccess.log
 
-CMD ["/bin/bash", "-c", "tail -f /var/task/proccess.log"]
+RUN python setup.py install
+
+ENTRYPOINT [ "python", "app.py" ]
