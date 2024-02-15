@@ -3,4 +3,3 @@ twsapi/
 *.venv
 */__pycache__
 *.zip
-*.whl

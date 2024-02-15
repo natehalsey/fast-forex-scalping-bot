@@ -22,5 +22,12 @@ docker.exec:
 requirements:
 	pip-compile requirements.in
 
+tws.wheel.build:
+	./script/build-tws-api-wheel
+
+tws.wheel.re:
+	rm -rf ./wheels/ibapi*.whl
+	./script/build-tws-api-wheel
+
 install:
 	. ./script/bootstrap
