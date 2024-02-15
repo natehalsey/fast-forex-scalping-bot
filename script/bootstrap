@@ -17,7 +17,11 @@ ibapi_installed=$(python -m pip show ibapi)
 if [ $? != 0 ]; then
     old_pwd=$(pwd)
     wget -N https://interactivebrokers.github.io/downloads/twsapi_macunix.1019.02.zip
-    unzip -f twsapi_macunix.1019.02.zip -d ./twsapi
+    if [ -d ./twsapi ]; then 
+        unzip -f twsapi_macunix.1019.02.zip -d ./twsapi
+    else
+        unzip twsapi_macunix.1019.02.zip -d ./twsapi
+    fi
     pip wheel -w $old_pwd ./twsapi/IBJts/source/pythonclient
 fi
 
