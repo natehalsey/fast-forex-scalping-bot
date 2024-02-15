@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  python-trading-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+  ib-gateway:
+    image: ghcr.io/unusualalpha/ib-gateway:stable
+    restart: always
+    environment:
+      TWS_USERID: ${TWS_USERID}
+      TWS_PASSWORD: ${TWS_PASSWORD}
+      TRADING_MODE: ${TRADING_MODE:-live}
+    ports:
+      - "127.0.0.1:4001:4001"
+      - "127.0.0.1:4002:4002"
+      - "127.0.0.1:5900:5900"
+    ulimits:
+      nofile:
+        soft: 10000
+        hard: 50000

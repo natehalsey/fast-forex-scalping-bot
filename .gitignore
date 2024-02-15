@@ -1,0 +1,6 @@
+twsapi/
+.env
+*.venv
+*/__pycache__
+*.zip
+*.whl

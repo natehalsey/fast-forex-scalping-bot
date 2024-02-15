@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+PYTHON_VERSION=$(cat .python-version | head -n 1 | tail -1)
+VENV_NAME="${PWD##*/}.venv"
+
+
+pyenv install --skip-existing $PYTHON_VERSION
+pyenv shell $PYTHON_VERSION
+
+python -m venv $VENV_NAME
+source $VENV_NAME/bin/activate
+
+python -m pip install --upgrade pip
+
+ibapi_installed=$(python -m pip show ibapi)
+
+# Install the TWS API Python SDK.
+if [ $? != 0 ]; then
+    old_pwd=$(pwd)
+    wget -N https://interactivebrokers.github.io/downloads/twsapi_macunix.1019.02.zip
+    unzip -f twsapi_macunix.1019.02.zip -d ./twsapi
+    pip wheel -w $old_pwd ./twsapi/IBJts/source/pythonclient
+fi
+
+pip install pip-tools
+pip-sync requirements.txt
+
