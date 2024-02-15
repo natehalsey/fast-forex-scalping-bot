@@ -1,22 +1,22 @@
 clean:
 	rm -rf *.venv
 
-docker.start:
+start:
 	sudo docker-compose up --build -d
 
-docker.stop:
+stop:
 	sudo docker-compose down
 
-docker.re:
+re:
 	make docker.stop && make docker.start
 
-docker.logs:
+logs:
 	sudo docker-compose logs -f
 
-docker.ps:
+ps:
 	sudo docker ps
 
-docker.exec:
+exec:
 	sudo docker exec /bin/bash $$1
 
 requirements:

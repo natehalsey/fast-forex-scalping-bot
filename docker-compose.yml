@@ -1,6 +1,8 @@
 version: '3.7'
 services:
   python-trading-bot:
+    depends_on:
+      - ib-gateway
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,3 +22,6 @@ services:
       nofile:
         soft: 10000
         hard: 50000
+
+networks:
+  local:
