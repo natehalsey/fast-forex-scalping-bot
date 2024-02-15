@@ -1,0 +1,38 @@
+set -xeu
+
+build_dir="./twsapi"
+build_path="${build_dir}/IBJts/source/pythonclient"
+
+whl_ver="10.19.2"
+whl_dir="./wheels"
+whl_name="ibapi-${whl_ver}-py3-none-any.whl"
+
+pkg_ver="1019.02"
+pkg_name="twsapi_macunix.${pkg_ver}.zip"
+pkg_url="https://interactivebrokers.github.io/downloads/${pkg_name}"
+
+# Build the wheel if it doesn't exist
+if [ ! -f "${whl_dir}/${whl_name}" ]; then
+    echo "Getting latest ${pkg_name}"
+    wget_result="$(wget -N --server-response $pkg_url 2>&1 | grep -c 'HTTP/1.1 200 OK' || true )"
+
+    if [ $wget_result = 1 ] || [ ! -d $build_dir ]; then  # the file was modified or the directory doesn't exist
+        unzip -u "${pkg_name}" -d "${build_dir}"
+    
+    # If there's no zip then the download failed
+    elif [ ! -f ${pkg_name} ]; then
+        echo "Failed to download ${pkg_name}"
+        exit 1
+    else
+        echo "Remote resource for ${pkg_name} matches current ..."
+    fi
+
+    echo "Building wheel ..."
+    pip wheel -w ${whl_dir} ${build_path}
+
+else
+    echo "Wheel already exists, exiting ..."
+    exit 1
+fi
+
+exit 0
