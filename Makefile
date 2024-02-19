@@ -1,33 +1,47 @@
-clean:
-	rm -rf *.venv
-
-start:
+# Docker stuff
+docker.start:
 	sudo docker-compose up --build -d
 
-stop:
+docker.stop:
 	sudo docker-compose down
 
-re:
+docker.re:
 	make docker.stop && make docker.start
 
-logs:
+docker.logs:
 	sudo docker-compose logs -f
 
-ps:
+docker.ps:
 	sudo docker ps
 
-exec:
+docker.exec:
 	sudo docker exec /bin/bash $$1
+
+docker.shell:
+	sudo docker run -it --name 
 
 requirements:
 	pip-compile requirements.in
 
-tws.wheel.build:
+clean:
+	rm -rf ./*.venv
+
+# TWS wheel building
+tws.build:
 	./script/build-tws-api-wheel
 
-tws.wheel.re:
+tws.re:
 	rm -rf ./wheels/ibapi*.whl
 	./script/build-tws-api-wheel
 
-install:
-	. ./script/bootstrap
+# Linting
+lint.check:
+	pylint ./src || true
+	black ./src --check --diff
+
+lint.fix:
+	black ./src
+
+test:
+	pytest src/
+

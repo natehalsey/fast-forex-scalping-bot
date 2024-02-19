@@ -17,8 +17,6 @@ COPY setup.py ./
 RUN pip install pip-tools
 RUN pip-sync requirements.txt
 
-RUN touch proccess.log
-
 RUN python setup.py install
 
 ENTRYPOINT [ "python", "app.py" ]

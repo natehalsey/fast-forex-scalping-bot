@@ -1,0 +1,31 @@
+[MASTER]
+
+init-hook='import sys; sys.path.append("src")'
+
+[MESSAGES CONTROL]
+
+disable=
+    missing-docstring,
+    invalid-name, 
+    too-many-locals, 
+    too-many-arguments,
+    too-few-public-methods,
+    no-method-argument,
+    missing-function-docstring,
+    missing-class-docstring,
+    missing-module-docstring,
+    too-few-public-methods,
+    unused-argument,
+    keyword-arg-before-vararg,
+    redefined-outer-name,
+    wrong-import-order
+    
+enable=unused-import, unused-variable
+
+[REPORTS]
+
+output-format=colorized
+
+[FORMAT]
+
+max-line-length=120
