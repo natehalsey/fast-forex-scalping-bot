@@ -20,7 +20,7 @@ class ResponseHandler(Thread):
     def __init__(
         self,
         client: EClient,
-        response_queue: AsyncQueue[Response],
+        response_queue: AsyncQueue,
     ):
         self.client: EClient = client
         super().__init__()

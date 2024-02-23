@@ -21,14 +21,17 @@ class IBKRClient:
         self.request_queue = AsyncQueue()
         self.response_queue = AsyncQueue()
 
+        self.kill_client_process: Event = Event()
+
         self.client_process = IBKRClientProcess(
-            self.request_queue, self.response_queue
+            self.request_queue, self.response_queue, self.kill_client_process
         )
         self.client_process.start()
 
     def get_account_value(self):
         request = Request(
             request="reqAccountSummary",
+            args=None,
             kwargs={"reqId": 1, "groupName": "All", "tags": "TotalCashValue"},
         )
         self.request_queue.put(request)
@@ -40,9 +43,13 @@ class IBKRClient:
 
             return response
 
+
 class IBKRClientProcess(Process):
     def __init__(
-        self, request_queue: AsyncQueue, response_queue: AsyncQueue, kill_client_process: Event
+        self,
+        request_queue: AsyncQueue,
+        response_queue: AsyncQueue,
+        kill_client_process: Event,
     ):
         super().__init__()
 
@@ -61,17 +68,18 @@ class IBKRClientProcess(Process):
         connection_handler.start()
 
         # pool the request threads together
-        request_handler = RequestHandler(self.client, self.request_queue, self.client_connected)
+        request_handler = RequestHandler(
+            self.client, self.request_queue, self.client_connected
+        )
         request_handler.start()
 
         # pool the response threads together
-        response_handler = ResponseHandler(self.client, self.response_queue, self.client_connected)
+        response_handler = ResponseHandler(self.client, self.response_queue)
         response_handler.start()
-    
 
         # wait for kill client process event
         self.kill_client_process.wait()
 
-        request_handler.kill()
-        response_handler.kill()
-        connection_handler.kill()
+        # request_handler.kill()
+        # response_handler.kill()
+        # connection_handler.kill()

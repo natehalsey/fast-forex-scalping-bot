@@ -13,10 +13,9 @@ logger = logging.getLogger(__name__)
 def entry_point():
     logger.info("Starting IBKR Client ...")
     client = IBKRClient()
-    client.start()
 
-    # logger.info("Client started, making requests ...")
     while True:
+        logger.info(client.get_account_value())
         time.sleep(10)
 
     # while True:
