@@ -1,4 +1,7 @@
 # Docker stuff
+docker.watch:
+	sudo docker-compose watch
+
 docker.start:
 	sudo docker-compose up --build -d
 

@@ -1,19 +1,34 @@
 version: '3.7'
 services:
   python-trading-bot:
-    depends_on:
-      - ib-gateway
     build:
       context: .
       dockerfile: Dockerfile
     restart: always
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src/
+          target: /var/task/
+    # volumes:
+    #   - ./config/ibc_config.ini:/root/ibc/config.ini
+    #   - ./config/ibgateway_config:/root/jts/jts.ini
   ib-gateway:
-    image: ghcr.io/unusualalpha/ib-gateway:stable
+    image: ghcr.io/natehalsey/ib-gateway:latest
     restart: always
     environment:
       TWS_USERID: ${TWS_USERID}
       TWS_PASSWORD: ${TWS_PASSWORD}
-      TRADING_MODE: ${TRADING_MODE:-live}
+      TRADING_MODE: ${TRADING_MODE}
+    volumes:
+        - type: bind
+          source: ./config/ibc_config.ini.tmpl
+          target: /root/ibc/config.ini.tmpl
+          read_only: true
+        - type: bind
+          source: ./config/ibgateway_config.ini
+          target: /root/Jts/jts.ini
+          read_only: true
     ports:
       - "127.0.0.1:4001:4001"
       - "127.0.0.1:4002:4002"
@@ -22,6 +37,3 @@ services:
       nofile:
         soft: 10000
         hard: 50000
-
-networks:
-  local:

@@ -1,8 +1,7 @@
 import logging
 import time
 
-from adapters.ibkr.client import IBKRClient
-from core.controller import create_process
+from ibkr_adapter.client import IBKRClient
 
 from base.logger import configure_logging
 
@@ -12,22 +11,16 @@ logger = logging.getLogger(__name__)
 
 
 def entry_point():
-    # start process that ensures we have a continuous connection to the client
-    # create_process_listener("/var/run/python-trading-bot", )
-
+    logger.info("Starting IBKR Client ...")
     client = IBKRClient()
+    client.start()
 
-    create_process(func=client.start_client, name="ibkr_client")
-
+    # logger.info("Client started, making requests ...")
     while True:
-        logger.info("Running inside main event loop ...")
-        time.sleep(3)
-    # # start process that continuously evaluates current positions
-    # monitor = PositionMonitor(client)
-    # finder = PositionFinder(client)
+        time.sleep(10)
 
-    # monitor.start_position_monitor()
-    # finder.start_postion_finder()
+    # while True:
+    #     time.sleep(10)
 
 
 if __name__ == "__main__":

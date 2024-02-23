@@ -1,4 +1,5 @@
 import os
+import logging
 
 from dotenv import load_dotenv
 
@@ -7,6 +8,8 @@ class Config:
     TWS_USERID: str = ""
     TWS_PASSWORD: str = ""
     TRADING_MODE: str = ""
+    LOG_LEVEL: int = logging.INFO
+    FILE_HANDLER: str = "./process.log"
 
     @classmethod
     def load_from_env(cls):

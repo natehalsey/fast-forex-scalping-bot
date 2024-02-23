@@ -2,8 +2,8 @@ import pytest
 
 from unittest.mock import patch
 
-from adapters.ibkr.connection_handler import ConnectionHandler
-from adapters.ibkr.client import IBKRClient
+from ibkr_adapter.client import ConnectionHandler
+from ibkr_adapter.client import IBKRClient
 
 
 @pytest.fixture()

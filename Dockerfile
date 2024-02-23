@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /var/task
 
-RUN apt-get update && apt-get install -y wget unzip
+RUN apt-get update && apt-get install -y procps
 
 WORKDIR /var/task/
 
