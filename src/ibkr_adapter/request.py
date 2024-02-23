@@ -24,28 +24,32 @@ class RequestHandler(Thread):
     REQUEST_QUEUE_TIME_MIN = 2
     REQUEST_QUEUE_TIME_MAX = 15
     MAX_THREADS = 4
+
     def __init__(
         self,
         client: EClient,
-        request_queue: AsyncQueue[Request],
+        request_queue: AsyncQueue,
         client_connected: Event,
     ):
         self.client: EClient = client
 
         super().__init__()
 
-        self.request_queue: AsyncQueue[Request] = request_queue
+        self.request_queue: AsyncQueue = request_queue
         self.client_connected: Event = client_connected
         self.kill_request_handler: Event = Event()
 
-        request_worker = RequestWorker(self.client, self.request_queue, self.client_connected)
+        request_worker = RequestWorker(
+            self.client, self.request_queue, self.client_connected
+        )
         request_worker.start()
 
         self.request_workers: List[RequestWorker] = [request_worker]
 
     def _scale_request_workers(self) -> None:
         """
-        Some very basic request worker scaling based on oldest time in queue and whether we have any worker threads available to be used.
+        Some very basic request worker scaling based on oldest time in queue
+        and whether we have any worker threads available to be used.
         """
         if len(self.request_workers) < self.MAX_THREADS and (
             self.request_queue.get_queue_time() > self.REQUEST_QUEUE_TIME_MAX
@@ -75,13 +79,11 @@ class RequestHandler(Thread):
         """
         while not self.kill_request_handler.is_set():
             try:
-                request: Request = self.request_queue.get(
-                    block=True, timeout=0.2
-                )
+                request: Request = self.request_queue.get(block=True, timeout=0.2)
                 self._handle_request(request.request, *request.args, **request.kwargs)
             except queue.Empty:
                 pass
-            except Exception as e:
+            except Exception as e:  # pylint:disable=broad-exception-caught
                 logger.error("Request %s failed: %s", request.request, str(e))
 
         for request_worker in self.request_workers:
@@ -90,18 +92,19 @@ class RequestHandler(Thread):
     def kill(self):
         self.kill_request_handler.set()
 
+
 class RequestWorker(Thread):
     def __init__(
         self,
         client: EClient,
-        request_queue: AsyncQueue[Request],
+        request_queue: AsyncQueue,
         client_connected: Event,
     ):
         self.client: EClient = client
 
         super().__init__()
 
-        self.request_queue: AsyncQueue[Request] = request_queue
+        self.request_queue: AsyncQueue = request_queue
         self.client_connected: Event = client_connected
 
         self.kill_request_worker: Event = Event()
@@ -119,7 +122,7 @@ class RequestWorker(Thread):
                 continue
             try:
                 self._request(request.request, *request.args, **request.kwargs)
-            except Exception as e:
+            except Exception as e:  # pylint:disable=broad-exception-caught
                 logger.error("Request %s failed: %s", request.request, str(e))
 
     def kill(self):

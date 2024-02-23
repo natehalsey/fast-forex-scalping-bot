@@ -3,6 +3,7 @@ import multiprocessing
 
 from typing import Any
 
+
 class AsyncQueue(multiprocessing.queues.Queue):
     def __init__(self):
         ctx = multiprocessing.get_context()
