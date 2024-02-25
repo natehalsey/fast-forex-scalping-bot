@@ -10,6 +10,7 @@ from threading import Event
 from ibkr_adapter.connection import ConnectionHandler
 from ibkr_adapter.response import Response, ResponseHandler
 from ibkr_adapter.request import Request, RequestHandler
+from ibkr_adapter.wrapper import IBKRClientWrapper
 
 from core.async_queue import AsyncQueue
 
@@ -28,21 +29,29 @@ class IBKRClient:
         )
         self.client_process.start()
 
+
     def get_account_value(self):
-        request = Request(
+        request_summary = Request(
+            request_id=1,
             request="reqAccountSummary",
-            args=None,
-            kwargs={"reqId": 1, "groupName": "All", "tags": "TotalCashValue"},
+            kwargs={"groupName": "All", "tags": "TotalCashValue"},
         )
-        self.request_queue.put(request)
-        while True:
-            try:
-                response: Response = self.response_queue.get()
-            except queue.Empty:
-                time.sleep(1)
+        self.request_queue.put(request_summary)
+        # while True:
+        #     try:
+        #         response: Response = self.response_queue.get()
+        #     except queue.Empty:
+        #         time.sleep(5)
+        #         pass
 
-            return response
+        #     return response
 
+        
+        # cancel_summary = Request(
+        #     request="cancellAccountSummary",
+        #     kwargs={"reqId": request_summary.request_id},
+        # )
+        # self.request_queue.put(cancel_summary)
 
 class IBKRClientProcess(Process):
     def __init__(
@@ -56,7 +65,7 @@ class IBKRClientProcess(Process):
         self.request_queue: AsyncQueue = request_queue
         self.response_queue: AsyncQueue = response_queue
 
-        wrapper = EWrapper()
+        wrapper = IBKRClientWrapper()
         self.client = EClient(wrapper=wrapper)
 
         self.client_connected: Event = Event()
@@ -73,7 +82,6 @@ class IBKRClientProcess(Process):
         )
         request_handler.start()
 
-        # pool the response threads together
         response_handler = ResponseHandler(self.client, self.response_queue)
         response_handler.start()
 

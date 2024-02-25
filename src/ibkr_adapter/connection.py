@@ -1,4 +1,5 @@
 import logging
+import time
 
 from ibapi.client import EClient
 from threading import Thread, Event
@@ -34,3 +35,4 @@ class ConnectionHandler(Thread):
                 self._connect_to_client()
             except NotConnectedError:
                 self.client_connected.clear()
+            time.sleep(1)

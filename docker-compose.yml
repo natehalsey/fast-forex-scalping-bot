@@ -10,9 +10,6 @@ services:
         - action: sync+restart
           path: ./src/
           target: /var/task/
-    # volumes:
-    #   - ./config/ibc_config.ini:/root/ibc/config.ini
-    #   - ./config/ibgateway_config:/root/jts/jts.ini
   ib-gateway:
     image: ghcr.io/natehalsey/ib-gateway:latest
     restart: always

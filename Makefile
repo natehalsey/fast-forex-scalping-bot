@@ -29,7 +29,6 @@ requirements:
 clean:
 	rm -rf ./*.venv
 
-# TWS wheel building
 tws.build:
 	./script/build-tws-api-wheel
 
@@ -37,7 +36,6 @@ tws.re:
 	rm -rf ./wheels/ibapi*.whl
 	./script/build-tws-api-wheel
 
-# Linting
 lint.check:
 	pylint ./src || true
 	black ./src --check --diff

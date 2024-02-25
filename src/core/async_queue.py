@@ -1,10 +1,12 @@
 import time
 import multiprocessing
 
+from multiprocessing.queues import Queue
+
 from typing import Any
 
 
-class AsyncQueue(multiprocessing.queues.Queue):
+class AsyncQueue(Queue):
     def __init__(self):
         ctx = multiprocessing.get_context()
         super(AsyncQueue, self).__init__(ctx=ctx)

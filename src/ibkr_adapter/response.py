@@ -4,6 +4,7 @@ import queue
 
 from dataclasses import dataclass
 from ibapi.client import EClient
+from ibapi.comm import read_fields
 from threading import Thread, Event
 
 from core.async_queue import AsyncQueue
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Response:
     response: str
+    request_id: int = None
 
 
 class ResponseHandler(Thread):
@@ -24,6 +26,7 @@ class ResponseHandler(Thread):
     ):
         self.client: EClient = client
         super().__init__()
+        #self.request_id: int = request_id
         self.response_queue: AsyncQueue = response_queue
 
         self.kill_response_handler: Event = Event()
@@ -32,6 +35,9 @@ class ResponseHandler(Thread):
         while not self.kill_response_handler.is_set():
             try:
                 response = self.client.msg_queue.get(block=True, timeout=0.2)
+                fields = read_fields(response)
+                logger.info(fields)
+                self.client.decoder.interpret(fields)
             except queue.Empty:
                 time.sleep(1)
                 continue
