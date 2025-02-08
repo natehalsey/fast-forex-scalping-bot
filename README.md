@@ -39,3 +39,4 @@ Install:
 ```
 
 Then simply `. .script/bootstrap` to bootstrap the environment and begin developing.
+# fast-forex-scalping-bot
